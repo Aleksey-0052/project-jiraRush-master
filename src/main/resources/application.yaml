@@ -8,13 +8,19 @@ app:
     max-pool-size: 100
 
 spring:
-  config:
-    import: application-secret.yaml
+  datasource:
+    url: jdbc:postgresql://localhost:5435/jira
+  profiles:
+    active: prod
+    include: secret
   init:
     mode: never
   jpa:
     show-sql: true
     open-in-view: false
+  messages:
+    basename: messages
+    encoding: UTF-8
 
     # validate db by model
     hibernate:
@@ -27,11 +33,11 @@ spring:
         default_batch_fetch_size: 20
         # https://stackoverflow.com/questions/21257819/what-is-the-difference-between-hibernate-jdbc-fetch-size-and-hibernate-jdbc-batc
         jdbc.batch_size: 20
-  datasource:
-    url: jdbc:postgresql://localhost:5435/jira
 
   liquibase:
-    changeLog: "classpath:db/changelog.sql"
+    enabled: true
+    change-log: classpath:db/db.changelog-master.yaml
+    contexts: prod
 
   # Jackson Fields Serialization
   jackson:
@@ -71,7 +77,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: never
 
   mail:
     properties:

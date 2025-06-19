@@ -93,6 +93,7 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
+        <!-- Минимальная версия Lombok, совместимая с JDK 21 — 1.18.30 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -143,6 +144,21 @@
             <artifactId>junit-platform-launcher</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Для создания docker-образа базы данных и запуска интеграционных тестов подключаем две зависимости -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.20.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.20.4</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
