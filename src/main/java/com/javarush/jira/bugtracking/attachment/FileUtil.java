@@ -7,14 +7,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @UtilityClass
 public class FileUtil {
@@ -25,12 +24,32 @@ public class FileUtil {
             throw new IllegalRequestDataException("Select a file to upload.");
         }
 
-        File dir = new File(directoryPath);
-        if (dir.exists() || dir.mkdirs()) {
-            File file = new File(directoryPath + fileName);
-            try (OutputStream outStream = new FileOutputStream(file)) {
-                outStream.write(multipartFile.getBytes());
-            } catch (IOException ex) {
+        Path dirPath = Path.of(directoryPath);
+        try {
+            Files.createDirectories(dirPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to created directory" + e);
+        }
+
+        Path filePath;
+
+        if (Files.exists(dirPath)) {
+            try {
+                //filePath = Path.of(directoryPath, fileName);
+                filePath = dirPath.resolve(fileName);
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to deleted file" + e);
+            }
+
+            try (
+                    InputStream is = multipartFile.getInputStream();
+                    OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                    BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                    BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
+            ) {
+                bis.transferTo(bos);
+            } catch (IOException e) {
                 throw new IllegalRequestDataException("Failed to upload file" + multipartFile.getOriginalFilename());
             }
         }
