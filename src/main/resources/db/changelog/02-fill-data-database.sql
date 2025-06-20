@@ -1,4 +1,7 @@
--- populate users
+--liquibase formatted sql
+
+--changeset asemenikhin:1
+--FILL DATA table users;
 DELETE
 FROM USERS;
 alter
@@ -20,6 +23,9 @@ values ('user@gmail.com', '{noop}password', 'userFirstName', 'userLastName', 'us
        ('artem711@gmail.com', '{noop}password', 'Артем', 'Запорожец', '@Artt'),
        ('max.pain@gmail.com', '{noop}password', 'Максим', 'Дудник', '@MaxPain'),
        ('admin@aws.co', '{noop}password', 'test', 'admin', '@testAdmin');
+
+--changeset asemenikhin:2
+--FILL DATA table user_role;
 
 -- 0 DEV
 -- 1 ADMIN
@@ -44,11 +50,15 @@ values (1, 0),
        (15, 1),
        (16, 1);
 
+--changeset asemenikhin:3
+--FILL DATA table profile;
 
 insert into PROFILE (ID, LAST_FAILED_LOGIN, LAST_LOGIN, MAIL_NOTIFICATIONS)
 values (1, null, null, 49),
        (2, null, null, 14);
 
+--changeset asemenikhin:4
+--FILL DATA table contact;
 insert into CONTACT (ID, CODE, VALUE)
 values (1, 'skype', 'userSkype'),
        (1, 'mobile', '+01234567890'),
@@ -57,6 +67,8 @@ values (1, 'skype', 'userSkype'),
        (2, 'tg', 'adminTg'),
        (2, 'vk', 'adminVk');
 
+--changeset asemenikhin:5
+--FILL DATA table attachment;
 delete
 from ATTACHMENT;
 alter
@@ -73,6 +85,8 @@ values ('Снимок экрана 1.png', './attachments/project/1_Снимок
 alter
 sequence ATTACHMENT_ID_SEQ restart with 1000;
 
+--changeset asemenikhin:6
+--CHANGE tables task_sprint_project_activity
 
 -- populate tasks
 delete
@@ -91,6 +105,9 @@ delete
 from ACTIVITY;
 alter
 sequence ACTIVITY_ID_SEQ restart with 1;
+
+--changeset asemenikhin:7
+--FILL DATA tables project_sprint_task;
 
 insert into PROJECT (code, title, description, type_code, parent_id)
 values ('JiraRush', 'JiraRush', '«Mini-JIRA» app : project management system tutorial app', 'task_tracker', null),
@@ -237,6 +254,8 @@ values ('Data', 'epic', 'in_progress', 1, 1,
        ('subproject backlog task', 'epic', 'in_progress', 4, null,
         now() + random() * interval '5 minutes' + random() * interval '20 seconds');
 
+--changeset asemenikhin:8
+--FILL DATA table task;
 INSERT INTO TASK (TITLE, TYPE_CODE, STATUS_CODE, PROJECT_ID, SPRINT_ID, PARENT_ID, STARTPOINT)
 values ('Add role manager and filters in security', 'task', 'done', 1, 1, 1,
         now() + random() * interval '5 minutes' + random() * interval '20 seconds'),
@@ -315,7 +334,10 @@ values ('Add role manager and filters in security', 'task', 'done', 1, 1, 1,
 alter
 sequence TASK_ID_SEQ restart with 1000;
 
----task 1------
+--changeset asemenikhin:9
+--FILL DATA table activity;
+
+---- task 1 --------
 INSERT INTO ACTIVITY(AUTHOR_ID, TASK_ID, UPDATED, COMMENT, TITLE, DESCRIPTION, ESTIMATE, TYPE_CODE, STATUS_CODE,
                      PRIORITY_CODE)
 values (6, 1, '2023-05-15 09:05:10', null, 'Data', null, 3, 'epic', 'in_progress', 'low'),
@@ -324,4 +346,12 @@ values (6, 1, '2023-05-15 09:05:10', null, 'Data', null, 3, 'epic', 'in_progress
        (11, 118, '2023-05-16 10:05:10', null, 'UI tab of tasks', null, 4, 'task', 'in_progress', 'normal'),
        (5, 118, '2023-05-16 11:10:10', null, 'UI tab of tasks', null, null, null, null, 'high'),
        (11, 118, '2023-05-16 12:30:10', null, 'UI tab of tasks', null, 2, null, null, null);
+
+--changeset asemenikhin:10
+--FILL DATA table activity;
+INSERT INTO ACTIVITY (AUTHOR_ID, TASK_ID, UPDATED, STATUS_CODE )
+VALUES (2, 82, now() - interval '10 days', 'in_progress'),
+       (2, 82, now() - interval '5 days', 'ready_for_review'),
+       (2, 82, now(),'done');
+
 

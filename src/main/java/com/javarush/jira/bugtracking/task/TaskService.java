@@ -19,8 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.javarush.jira.bugtracking.ObjectType.TASK;
 import static com.javarush.jira.bugtracking.task.TaskUtil.fillExtraFields;
@@ -140,4 +144,35 @@ public class TaskService {
             throw new DataConflictException(String.format(assign ? CANNOT_ASSIGN : CANNOT_UN_ASSIGN, userType, task.getStatusCode()));
         }
     }
+
+    @Transactional
+    public Set<String> addTagsToTask(long taskId, String...tag) {
+        TaskRepository taskRepository = handler.getRepository();
+        Task task = taskRepository.getExisted(taskId);
+        Arrays.stream(tag).forEach(t -> task.getTags().add(t));
+        taskRepository.save(task);
+        return task.getTags();
+    }
+
+    @Transactional(readOnly = true)
+    public Set<String> getTagsByTaskId(long taskId) {
+        TaskRepository taskRepository = handler.getRepository();
+        Task task = taskRepository.findByIdWithTags(taskId)
+                .orElseThrow(() -> new NotFoundException(String.format("Not found task with id = %d", taskId)));
+        return task.getTags();
+    }
+
+    @Transactional
+    public void removeTag(long taskId, String tag) {
+        TaskRepository taskRepository = handler.getRepository();
+        Task task = taskRepository.getExisted(taskId);
+        if (!task.getTags().remove(tag)) {
+            throw new NotFoundException("Not found tag - " + tag);
+        }
+        taskRepository.save(task);
+    }
+
 }
+
+
+

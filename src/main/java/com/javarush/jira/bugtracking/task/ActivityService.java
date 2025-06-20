@@ -3,12 +3,16 @@ package com.javarush.jira.bugtracking.task;
 import com.javarush.jira.bugtracking.Handlers;
 import com.javarush.jira.bugtracking.task.to.ActivityTo;
 import com.javarush.jira.common.error.DataConflictException;
+import com.javarush.jira.common.error.NotFoundException;
 import com.javarush.jira.login.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static com.javarush.jira.bugtracking.task.TaskUtil.getLatestValue;
 
@@ -73,4 +77,61 @@ public class ActivityService {
             }
         }
     }
+
+    /**
+     * Метод по подсчету времени, сколько задача находилась в работе
+     */
+    public String calculateTimeTaskInProgress(long taskId) {
+        Duration timeBetweenStatusCodes = calculateTimeBetweenStatusCodes(taskId,
+                "in_progress", "ready_for_review");
+        long numberOfDays = timeBetweenStatusCodes.toDays();
+        long numberOfPartHours = timeBetweenStatusCodes.toHoursPart();
+        long numberOfPartMinutes = timeBetweenStatusCodes.toMinutesPart();
+        long numberOfPartSeconds = timeBetweenStatusCodes.toSecondsPart();
+        return String.format("The total time the task in progress is %s days, %s hours, %s minutes, %s seconds",
+                numberOfDays, numberOfPartHours, numberOfPartMinutes, numberOfPartSeconds);
+    }
+
+    /**
+     * Метод по подсчету времени, сколько задача находилась на тестировании
+     */
+    public String calculateTimeTaskInTesting(long taskId) {
+        Duration timeBetweenStatusCodes = calculateTimeBetweenStatusCodes(taskId,
+                "ready_for_review", "done");
+        long numberOfDays = timeBetweenStatusCodes.toDays();
+        long numberOfPartHours = timeBetweenStatusCodes.toHours() % 24;
+        long numberOfPartMinutes = timeBetweenStatusCodes.toMinutes() % 60;
+        long numberOfPartSeconds = timeBetweenStatusCodes.toSeconds() % 60;
+        return String.format("The total time the task in testing is %d days, %d hours, %d minutes, %d seconds",
+                numberOfDays, numberOfPartHours, numberOfPartMinutes, numberOfPartSeconds);
+    }
+
+    private Duration calculateTimeBetweenStatusCodes(long taskId, String startStatusCode, String endStatusCode) {
+        List<Activity> activities = handler.getRepository().findAllByTaskId(taskId);
+        if (activities.isEmpty()) {
+            throw new NotFoundException("The task with the id - " + taskId + " was not found, or the activity for the " +
+                    "task with the id - " + taskId + " was not found");
+        }
+
+        LocalDateTime startUpdated = getUpdatedTimeFromActivity(activities, startStatusCode);
+        LocalDateTime endUpdated = getUpdatedTimeFromActivity(activities, endStatusCode);
+
+        if (startUpdated.isAfter(endUpdated)) {
+            throw new DataConflictException("The time of the status сode: " + startStatusCode + " must be earlier " +
+                    "than the time of the status code: " + endStatusCode);
+        }
+        return Duration.between(startUpdated, endUpdated);
+    }
+
+    private LocalDateTime getUpdatedTimeFromActivity(List<Activity> activities, String statusCode) {
+
+        return activities.stream()
+                .filter(activity -> activity.getStatusCode() != null)
+                .filter(activity -> activity.getStatusCode().equals(statusCode))
+                .map(Activity::getUpdated)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("No activity with the status code " + statusCode + " was found"));
+    }
+
 }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static com.javarush.jira.common.BaseHandler.createdResponse;
 
@@ -156,4 +157,35 @@ public class TaskController {
             this(taskTo, new LinkedList<>());
         }
     }
+
+    @PatchMapping("/{id}/add-tags")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<String> addTagsToTask(@PathVariable("id") long taskId, @RequestParam String...tag) {
+        return taskService.addTagsToTask(taskId, tag);
+    }
+
+    @GetMapping("/{id}/get-tags")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<String> getTagsByTaskId(@PathVariable("id") long taskId) {
+        return taskService.getTagsByTaskId(taskId);
+    }
+
+    @DeleteMapping("/{id}/delete-tags")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeTag(@PathVariable("id") long taskId, @RequestParam String tag) {
+        taskService.removeTag(taskId, tag);
+    }
+
+    @GetMapping(path = "/{id}/time-in-progress", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public String getTimeTaskInProgress(@PathVariable("id") long taskId) {
+        return activityService.calculateTimeTaskInProgress(taskId);
+    }
+
+    @GetMapping("/{id}/time-in-testing")
+    @ResponseStatus(HttpStatus.OK)
+    public String getTimeTaskInTesting(@PathVariable("id") long taskId) {
+        return activityService.calculateTimeTaskInTesting(taskId);
+    }
+
 }
