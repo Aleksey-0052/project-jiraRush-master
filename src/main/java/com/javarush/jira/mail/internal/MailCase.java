@@ -43,7 +43,6 @@ public class MailCase extends BaseEntity {
 
     @CreationTimestamp
     @Column(name = "date_time", nullable = false, updatable = false)
-    @NotNull
     private LocalDateTime dateTime;
 
     public MailCase(String email, String name, String template, String result) {

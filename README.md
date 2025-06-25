@@ -30,12 +30,12 @@
 1. **Разобраться со структурой проекта (onboarding)**
 2. **Удалить социальные сети: vk, yandex**
      * Удалены кнопки из шаблонов, связанные с данными социальными сетями
-       - `resources/view/unauth/register.html`
-       - `resources/view/login.html`
+       - 'resources/view/unauth/register.html'
+       - 'resources/view/login.html'
      * Удалены классы
-       - `com.javarush.jira.login.internal.sociallogin.handler.YandexOAuth2UserDataHandler`
-       - `com.javarush.jira.login.internal.sociallogin.handler.VkOAuth2UserDataHandler`
-     * Удалена информация о данных социальных сетях в файле `application.yaml`
+       - 'com.javarush.jira.login.internal.sociallogin.handler.YandexOAuth2UserDataHandler'
+       - 'com.javarush.jira.login.internal.sociallogin.handler.VkOAuth2UserDataHandler'
+     * Удалена информация о данных социальных сетях в файле 'application.yaml'
 3. **Вынести чувствительную информацию в отдельный проперти файл**
      * Из файла application.yaml удалена чувствительная информация и перенесена во вновь созданный файл 
        application-secret.yaml 
@@ -76,4 +76,12 @@
        значение FetchType.LAZY (режим ленивой загрузки для списка активностей), добавил в ActivityRepository метод
        по получению из базы данных по идентификатору задачи списка активностей
      * Добавил необходимые методы в ActivityService и TaskController 
-       
+11. **Добавить локализацию минимум на двух языках для шаблонов писем (mails) и стартовой страницы index.html**
+     * Создал:
+       - Конфигурационный класс LocaleConfig
+       - Resource Bundle 'messages' с файлами на трех языках
+     * Внес:
+       - соответствующие изменения в файлы 'index.html', 'header.html', 'footer.html', email-confirmation.html', 
+         'password-reset.html'
+       - в классы MailService и SecurityConfig
+    

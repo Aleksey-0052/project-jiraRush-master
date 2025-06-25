@@ -1,7 +1,7 @@
 #  https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 app:
   host-url: http://localhost:8080
-  test-mail: jira4jr@gmail.com
+  test-mail: ${TEST_MAIL:jira4jr@gmail.com}
   templates-update-cache: 5s
   mail-sending-props:
     core-pool-size: 8
@@ -89,6 +89,7 @@ spring:
     host: smtp.gmail.com
     port: 587
   thymeleaf.check-template-location: false
+  thymeleaf.encoding: utf-8
 
   mvc.throw-exception-if-no-handler-found: true
   web.resources.add-mappings: false
