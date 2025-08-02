@@ -11,6 +11,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 abstract class BaseTests {
 
+    // @ActiveProfiles("test") - данная аннотация активирует профайл "test"
+
     @Container
     static PostgreSQLContainer<?> postreSQL = new PostgreSQLContainer<>("postgres:latest");
 

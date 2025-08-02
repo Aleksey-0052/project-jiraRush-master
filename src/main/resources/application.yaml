@@ -80,14 +80,17 @@ spring:
       mode: never
 
   mail:
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: true
-          auth: true
     host: smtp.gmail.com
     port: 587
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
   thymeleaf.check-template-location: false
   thymeleaf.encoding: utf-8
 

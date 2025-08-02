@@ -75,7 +75,8 @@
      * В связи с тем, что у сущности 'Task' над полем 'activity' в аннотации @OneToMany параметр fetch имеет
        значение FetchType.LAZY (режим ленивой загрузки для списка активностей), добавил в ActivityRepository метод
        по получению из базы данных по идентификатору задачи списка активностей
-     * Добавил необходимые методы в ActivityService и TaskController 
+     * Добавил необходимые методы в ActivityService и TaskController
+9. **Создал Dockerfile и внес дополнение в класс RestAuthenticationEntryPoint**
 11. **Добавить локализацию минимум на двух языках для шаблонов писем (mails) и стартовой страницы index.html**
      * Создал:
        - Конфигурационный класс LocaleConfig
