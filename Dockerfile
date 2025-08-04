@@ -11,6 +11,7 @@ FROM eclipse-temurin:17-jre-jammy
 LABEL authors="Semenikhin A.F"
 WORKDIR /app
 COPY --from=build /app/target/*.jar my-app.jar
+COPY resources ./resources
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "my-app.jar"]
 

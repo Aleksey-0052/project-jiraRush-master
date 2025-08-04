@@ -1,0 +1,56 @@
+services:
+  jira-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jira-server
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db-postgres:5432/jira
+      SPRING_LIQUIBASE_ENABLED: "true"
+      LANG: C.UTF-8
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+    networks:
+      - jira-network
+
+  db-postgres:
+    image: postgres:latest
+    container_name: db-postgres
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U jira -d jira" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_DB: jira
+      POSTGRES_USER: jira
+      POSTGRES_PASSWORD: JiraRush
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./data/db:/var/lib/postgresql/data/
+    networks:
+      - jira-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    networks:
+      - jira-network
+
+networks:
+  jira-network:
+    driver: bridge
+
+
